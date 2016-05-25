@@ -6,7 +6,7 @@ from django.http.response import HttpResponse
 __author__ = 'yinzishao'
 
 from django.core.signing import Signer,TimestampSigner
-from redisutil import get_userpk,delete_token
+from run.redisutil import get_userpk,delete_token
 
 token_cahce_salt = "make_token_in_cache"
 time_signer = TimestampSigner(salt=token_cahce_salt)

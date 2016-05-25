@@ -1,17 +1,17 @@
 # -*- coding:utf-8 -*-
-from base64 import b64decode
 import json
+
 from django.contrib.auth import authenticate
 from django.contrib.auth.views import login
-from django.shortcuts import render, render_to_response,HttpResponse, redirect
+from django.shortcuts import render, HttpResponse
 from django.contrib.auth.models import User
-from django.template.context_processors import csrf
-from django.views.decorators.csrf import csrf_exempt
 from django.db import IntegrityError
-from redisutil import get_userpk,delete_token,insert_token
-from tokens import user_signer,make_token_in_cache,check_token_in_cache_encode
+from run.redisutil import insert_token
+from tokens import make_token_in_cache
 from decorators import token_cache_required
-from http import JsonResponse, JsonError, JsonResponseForbidden, JsonResponseUnauthorized
+from run.http import JsonResponse, JsonError
+
+
 # @token_required
 def loginview(request):
     # c = {"yin":"yin"}
@@ -108,7 +108,7 @@ def login_from_pwd(request):
                 #不加密
                 data = {
                     'token':token,
-                    'userpk':user.pk,
+                    'userpk':str(user.pk),
                 }
                 return JsonResponse(data)
             else:

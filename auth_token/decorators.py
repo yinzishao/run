@@ -1,8 +1,9 @@
 #!/usr/bin/env python
 # -*- coding:utf-8 -*-
 import json
-from django.http.response import HttpResponseForbidden
-from http import JsonResponse, JsonError, JsonResponseForbidden, JsonResponseUnauthorized
+
+from run.http import JsonError
+
 __author__ = 'yinzishao'
 from base64 import b64decode
 
@@ -17,7 +18,7 @@ def token_cache_required(view_func):
         userpk = None
         token = None
         basic_auth = request.META.get('HTTP_AUTHORIZATION')
-        userpk = request.POST.get('userpk', request.GET.get('userpk'))
+        userpk = request.POST.get('id', request.GET.get('id'))
         # userpk = request.POST.get('userpk')
         token = request.POST.get('token', request.GET.get('token'))
         # token = request.POST.get('token')
@@ -29,7 +30,7 @@ def token_cache_required(view_func):
             except Exception:
                 return JsonError("data should be json")
             else:
-                userpk = request_data['userpk']
+                userpk = request_data['id']
                 token = request_data['token']
         if not (userpk and token) and basic_auth:
             auth_method, auth_string = basic_auth.split(' ', 1)
@@ -38,7 +39,7 @@ def token_cache_required(view_func):
                 auth_string = b64decode(auth_string.strip())
                 userpk, token = auth_string.decode().split(':', 1)
         if not (userpk and token):
-            return JsonError("Must include 'userpk' and 'token' parameters with request.")
+            return JsonError("Must include 'id' and 'token' parameters with request.")
         # print userpk,token
         user = authenticate(pk=userpk, token=token)
         # print user
