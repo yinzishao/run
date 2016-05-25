@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head></head>
+<body>
+{{ user.date_joined }}
+<form action="/login_from_pwd/" method="POST">
+    <div data-role="fieldcontain">
+        <label for="email">username:</label><input type="text" name="username" id="email" value="" />
+    </div>
+    <div data-role="fieldcontain">
+        <label for="password">Password:</label><input type="password" name="password" id="password" value="" />
+    </div>    
+    <button type="submit" name="submit" value="submit-value">Sign in</button>
+</form>
+<body>
+<form action="/signup/" method="POST">
+    <div data-role="fieldcontain">
+        <label for="email">username:</label><input type="text" name="username" id="email" value="" />
+    </div>
+    <div data-role="fieldcontain">
+        <label for="password">Password:</label><input type="password" name="password" id="password" value="" />
+    </div>    
+    <button type="submit" name="submit" value="submit-value">Sign up</button>
+</form>
+</body>
+</html>
