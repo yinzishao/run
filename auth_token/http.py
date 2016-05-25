@@ -11,7 +11,7 @@ def JsonResponse(data, dump=True, status=200):
     try:
         data['errors']
     except KeyError:
-        data['success'] = True
+        data['success'] = "1"
     except TypeError:
         pass
 
@@ -24,7 +24,7 @@ def JsonResponse(data, dump=True, status=200):
 
 def JsonError(error_string, status=200):
     data = {
-        'success': False,
+        'success': "0",
         'errors': error_string,
     }
     return JSONResponse(data)

@@ -2,7 +2,7 @@
 # -*- coding:utf-8 -*-
 import json
 from django.http.response import HttpResponseForbidden
-
+from http import JsonResponse, JsonError, JsonResponseForbidden, JsonResponseUnauthorized
 __author__ = 'yinzishao'
 from base64 import b64decode
 
@@ -27,7 +27,7 @@ def token_cache_required(view_func):
             try:
                 request_data= json.loads(request.body)
             except Exception:
-                return HttpResponseForbidden("data should be json")
+                return JsonError("data should be json")
             else:
                 userpk = request_data['userpk']
                 token = request_data['token']
@@ -38,12 +38,12 @@ def token_cache_required(view_func):
                 auth_string = b64decode(auth_string.strip())
                 userpk, token = auth_string.decode().split(':', 1)
         if not (userpk and token):
-            return HttpResponseForbidden("Must include 'userpk' and 'token' parameters with request.")
+            return JsonError("Must include 'userpk' and 'token' parameters with request.")
         # print userpk,token
         user = authenticate(pk=userpk, token=token)
         # print user
         if user:
             request.user = user
             return view_func(request, *args, **kwargs)
-        return HttpResponseForbidden("authentication failer ")
+        return JsonError("authentication failer ")
     return _wrapped_view

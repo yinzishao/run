@@ -72,11 +72,19 @@ def signup(request):
 
 #用户密码登录返回token
 def login_from_pwd(request):
+    username=None
+    password=None
     if request.method == 'POST':
         username = request.POST.get('username')
         password = request.POST.get('password')
     # username="yzs"
     # password="pwd"
+        if not (username and password):
+                # print request.body
+                request_data= json.loads(request.body)
+                username =  request_data["username"]
+                password =  request_data["password"]
+                print username,password
         if username and password:
             user = authenticate(username=username,password=password)
 
@@ -105,6 +113,8 @@ def login_from_pwd(request):
                 return JsonResponse(data)
             else:
                 return JsonError("Fail")
+        else:
+            return JsonError("username and password is required")
     else:
             return JsonError("POST is required")
 
