@@ -10,10 +10,8 @@ from django.views.decorators.csrf import csrf_exempt
 from django.db import IntegrityError
 from redisutil import get_userpk,delete_token,insert_token
 from tokens import user_signer,make_token_in_cache,check_token_in_cache_encode
-
-# from tokenapi.decorators import token_required
-# from tokenapi.views import token_new
-
+from decorators import token_cache_required
+from http import JsonResponse, JsonError, JsonResponseForbidden, JsonResponseUnauthorized
 # @token_required
 def loginview(request):
     # c = {"yin":"yin"}
@@ -54,11 +52,11 @@ def signup(request):
                     return HttpResponse("success")
                 else:
 
-                    return HttpResponse("fail")
+                    return JsonError("fail")
             else:
-                return HttpResponse("User already exists")
+                return JsonError("User already exists")
         else:
-            return HttpResponse("username or password is none")
+            return JsonError("username or password is none")
 
 
             # print request_data
@@ -69,7 +67,7 @@ def signup(request):
         # data['password']=password
         # return HttpResponse(json.dumps(data),content_type="application/json")
 
-    return HttpResponse("signup fail")
+    return JsonError("signup fail")
 
 
 #用户密码登录返回token
@@ -104,12 +102,17 @@ def login_from_pwd(request):
                     'token':token,
                     'userpk':user.pk,
                 }
-                return HttpResponse(json.dumps(data),content_type="application/json")
+                return JsonResponse(data)
             else:
-                return HttpResponse("Fail")
+                return JsonError("Fail")
     else:
-            return HttpResponse("POST is required")
-from decorators import token_cache_required
+            return JsonError("POST is required")
+
+
+
+
+
+
 
 @token_cache_required
 # @csrf_exempt
@@ -140,7 +143,10 @@ def test(request):
     #     us = request.POST.get('userpk')
     #     pw = request.POST.get('token')
     # print us,pw
-    return HttpResponse("token login succeed")
+
+
+    return JsonResponse({})
+
     # data={
     #     "token": "1b46US:_uw-1cM6p3M8H10r7SF3DR6EQCk",
     #     "userpk": "FgsrjCxMETo6hgMNoeR8Tufa1-o",
@@ -188,10 +194,12 @@ def createUser(**kwargs):
     try:
         user = User.objects.create_user(username,email,password)
     except IntegrityError:
-        HttpResponse("Fail")
+        JsonError("Fail")
     # if user.
 
-
+@token_cache_required
+def change_inf(request):
+    return JsonError("developing")
 
 
 

@@ -78,6 +78,18 @@ class AuthUserUserPermissions(models.Model):
         unique_together = (('user_id', 'permission_id'),)
 
 
+class Cal(models.Model):
+    cal_id = models.AutoField(primary_key=True)
+    cal_year_and_month = models.DateField(blank=True, null=True)
+    cal_day = models.DateField(blank=True, null=True)
+    cal_value = models.CharField(max_length=45, blank=True, null=True)
+    user = models.ForeignKey(AuthUser, blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'cal'
+
+
 class DjangoAdminLog(models.Model):
     action_time = models.DateTimeField()
     object_id = models.TextField(blank=True, null=True)
@@ -122,8 +134,21 @@ class DjangoSession(models.Model):
         db_table = 'django_session'
 
 
+class Locations(models.Model):
+    locations_id = models.IntegerField(primary_key=True)
+    latitude = models.CharField(max_length=45, blank=True, null=True)
+    longitude = models.CharField(max_length=45, blank=True, null=True)
+    time = models.DateTimeField(blank=True, null=True)
+    zone = models.CharField(max_length=45, blank=True, null=True)
+    running_result = models.ForeignKey('RunningResult', blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'locations'
+
+
 class RunningResult(models.Model):
-    running_result_id = models.IntegerField(primary_key=True)
+    running_result_id = models.AutoField(primary_key=True)
     running_result_distance = models.CharField(max_length=45, blank=True, null=True)
     running_result_duration = models.TimeField(blank=True, null=True)
     running_result_steps = models.IntegerField(blank=True, null=True)
