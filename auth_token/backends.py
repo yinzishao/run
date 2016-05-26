@@ -18,5 +18,5 @@ class TokenCacheBackend(ModelBackend):
         if user:
             return user
         else:
-            return None
+            return inf
 

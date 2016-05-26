@@ -9,7 +9,7 @@ from django.http import HttpResponse
 
 def JsonResponse(data, dump=True, status=200):
     try:
-        data['errors']
+        data['error']
     except KeyError:
         data['success'] = "1"
     except TypeError:
@@ -25,7 +25,7 @@ def JsonResponse(data, dump=True, status=200):
 def JsonError(error_string, status=200):
     data = {
         'success': "0",
-        'errors': error_string,
+        'error': error_string,
     }
     return JSONResponse(data)
 

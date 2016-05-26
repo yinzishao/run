@@ -135,7 +135,7 @@ class DjangoSession(models.Model):
 
 
 class Locations(models.Model):
-    locations_id = models.IntegerField(primary_key=True)
+    locations_id = models.AutoField(primary_key=True)
     latitude = models.CharField(max_length=45, blank=True, null=True)
     longitude = models.CharField(max_length=45, blank=True, null=True)
     time = models.DateTimeField(blank=True, null=True)
@@ -151,10 +151,8 @@ class RunningResult(models.Model):
     running_result_id = models.AutoField(primary_key=True)
     running_result_distance = models.CharField(max_length=45, blank=True, null=True)
     running_result_duration = models.TimeField(blank=True, null=True)
-    running_result_steps = models.IntegerField(blank=True, null=True)
     running_result_starttime = models.DateTimeField(blank=True, null=True)
     running_result_endtime = models.DateTimeField(blank=True, null=True)
-    location = models.IntegerField(blank=True, null=True)
     user = models.ForeignKey(AuthUser, blank=True, null=True)
 
     class Meta:

@@ -10,7 +10,7 @@ from base64 import b64decode
 from django.contrib.auth import authenticate
 from django.views.decorators.csrf import csrf_exempt
 from functools import wraps
-
+from django.contrib.auth.models import User
 def token_cache_required(view_func):
     @csrf_exempt
     @wraps(view_func)
@@ -41,10 +41,13 @@ def token_cache_required(view_func):
         if not (userpk and token):
             return JsonError("Must include 'id' and 'token' parameters with request.")
         # print userpk,token
-        user = authenticate(pk=userpk, token=token)
+        result = authenticate(pk=userpk, token=token)
         # print user
-        if user:
-            request.user = user
+        if isinstance(result,User):
+
+            request.user = result
             return view_func(request, *args, **kwargs)
-        return JsonError("authentication failer ")
+        else:
+            return result
+        # return JsonError("authentication failer ")
     return _wrapped_view
