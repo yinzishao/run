@@ -158,6 +158,8 @@ class RunningResult(models.Model):
     class Meta:
         managed = False
         db_table = 'running_result'
+    def __str__(self):
+        return str(self.running_result_id)
 
 
 class UserInformation(models.Model):

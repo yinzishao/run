@@ -39,7 +39,8 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'auth_token',
     'running',
-
+    # 'debug_toolbar',
+    # 'run',
 )
 
 
