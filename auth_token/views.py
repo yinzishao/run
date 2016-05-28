@@ -6,6 +6,7 @@ from django.contrib.auth.views import login
 from django.shortcuts import render, HttpResponse
 from django.contrib.auth.models import User
 from django.db import IntegrityError
+from run.models import UserInformation, AuthUser
 from run.redisutil import insert_token
 from tokens import make_token_in_cache
 from decorators import token_cache_required
@@ -35,7 +36,7 @@ def signup(request):
         realname = request.POST.get('realname',None)
 
         if not (username and password and realname):
-            print request.body
+            # print request.body
             try:
                 request_data= json.loads(request.body,"utf-8")
                 # request_data= simplejson.loads(request.body)
@@ -43,10 +44,10 @@ def signup(request):
                 password =  request_data["password"]
                 realname =  request_data["realname"]
             except Exception,e:
-                print e
+                # print e
                 return JsonError(e.message+"is required")
             # email =request_data['email']
-        print username,password,realname
+        # print username,password,realname
         if username and password and realname:
             try:
                 # print "test get user"
@@ -57,8 +58,32 @@ def signup(request):
                 user = User.objects.create_user(username,password=password,first_name=realname[:-2],last_name=realname[-2:])
                 # user = User.objects.create_user(username,password=password,first_name=realname.encode('unicode_escape'))
                 # user = User.objects.create_user(username,password=password,first_name=u"尹子勺")
-                if user.is_active:
-                    return HttpResponse("success")
+
+                if user and user.is_active:
+                    login(request,user)
+                    token = make_token_in_cache(user).split(":",1)[1]
+
+                    #将{token:id}放在redis内
+                    redis_data = {
+                        'token':token,
+                        'userpk':user.pk,
+                    }
+                    insert_token(redis_data)
+                    #将pk加密
+
+                    # userpk_encode = user_signer.sign(user.pk).split(":",1)[1]
+                    # data = {
+                    #     'token':token,
+                    #     'userpk':userpk_encode,
+                    # }
+                    #不加密
+                    data = {
+                        'token':token,
+                        'userpk':str(user.pk),
+                        'username':username,
+                        'realname':realname
+                    }
+                    return JsonResponse(data)
                 else:
 
                     return JsonError("fail")
@@ -86,14 +111,14 @@ def login_from_pwd(request):
     if request.method == 'POST':
         username = request.POST.get('username')
         password = request.POST.get('password')
-    # username="yzs"
+    # username="yzs"fhttp://127.0.0.1/
     # password="pwd"
         if not (username and password):
                 # print request.body
                 request_data= json.loads(request.body)
                 username =  request_data["username"]
                 password =  request_data["password"]
-                print username,password
+                # print username,password
         if username and password:
             user = authenticate(username=username,password=password)
 
@@ -115,10 +140,27 @@ def login_from_pwd(request):
                 #     'userpk':userpk_encode,
                 # }
                 #不加密
+                username = user.username
+                realname = user.first_name+user.last_name
+
                 data = {
                     'token':token,
                     'userpk':str(user.pk),
+                    'username':username,
+                    'realname':realname
+
                 }
+                user =AuthUser.objects.get(id=user.pk)
+                inf = user.userinformation_set.all()
+                if len(inf)!= 0:
+                    inf = inf[0]
+                    data["avatar"]=inf.user_avatar
+                    data["height"]=inf.user_height
+                    data["weight"]=inf.user_weight
+                    data["sex"]=inf.user_sex
+                    data["birth"]=str(inf.user_birth)
+
+                # print data
                 return JsonResponse(data)
             else:
                 return JsonError("Fail")
@@ -216,9 +258,26 @@ def createUser(**kwargs):
         JsonError("Fail")
     # if user.
 
+#修改个人信息
 @token_cache_required
 def change_inf(request):
-    return JsonError("developing")
+    try:
+        data = json.loads(request.body)
+        # avatar = getattr(data,"user_avatar",None)
+        try:
+            user = AuthUser.objects.get(id=data["id"])
+        except AuthUser.DoesNotExist,e:
+            return JsonError("id is not valid")
+
+        del data["id"]
+        del data["token"]
+        user_inf = UserInformation(**data)
+        user_inf.user =user
+        user_inf.save()
+        return JsonResponse()
+        # avatar = getattr(data,"user_avatar",None)
+    except:
+        return JsonError("Fail")
 
 
 

@@ -7,7 +7,7 @@ except ImportError:
 from django.http import HttpResponse
 
 
-def JsonResponse(data, dump=True, status=200):
+def JsonResponse(data={}, dump=True, status=200):
     try:
         data['error']
     except KeyError:

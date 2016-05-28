@@ -160,7 +160,10 @@ class RunningResult(models.Model):
         db_table = 'running_result'
     def __str__(self):
         return str(self.running_result_id)
-
+    def toJSON(self):
+        import json
+        return json.dumps(dict([(attr, getattr(self, attr)) for attr in [f.name for f in self._meta.fields]]))
+        # return json.dumps(dict([(attr, getattr(self, attr)) for attr in [f.name for f in self._meta.fields] if attr in ["running_result_distance","running_result_duration"]]))
 
 class UserInformation(models.Model):
     user_information_id = models.AutoField(primary_key=True)
