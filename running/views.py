@@ -18,7 +18,7 @@ from django.db import transaction
 #上传一次跑步结果并且返回前三
 # @token_cache_required
 def upload_result(request):
-    """
+
     # return JsonResponse(RUNNING_RESULT)
     r_r =RUNNING_RESULT
     userpk = r_r["id"]
@@ -75,14 +75,13 @@ def upload_result(request):
         print e.message
         return JsonError("upload fail")
     else:
-        """
-    return return_first_three()
         #返回排名和前三名
+        return return_first_three(re)
 
 
 
 
-def return_first_three():
+def return_first_three(my_rs):
     # RunningResult.objects.all()
     #返回距离前三名
     #将mysql里面的distance（varchar）转换为小数
@@ -92,16 +91,19 @@ def return_first_three():
         .order_by('-running_result_distance_de')
         rs_fir_thr = rs_sort[:3]
 
-        my_rs = RunningResult.objects.get(running_result_id=9)
-
-        result = []
+        # my_rs = RunningResult.objects.get(running_result_id=9)
+        result={}
+        run = []
+        #个人排名
         my_ranking =  list(rs_sort.values_list('running_result_id', flat=True)).index(my_rs.running_result_id)+1
-        result.append({"my_ranking":my_ranking})
+        result["my_ranking"]=str(my_ranking)
+        #返回前三
         for i in  rs_fir_thr:
             data={}
             data['username'] = i.user.username
             data['distance'] = i.running_result_distance
-            result.append(data)
+            run.append(data)
+        result["run"]=run
 
 
 

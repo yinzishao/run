@@ -10,23 +10,23 @@ RUNNING_RESULT = {
     "id": "1",
     "token": "ss",
     "run": {
-        "distance": "2000.22",
-        "duration": "20.22",
+        "distance": "222.22",
+        "duration": "30.22",
         "locations": [
             {
                 "longitude": "100",
                 "latitude": "100",
-                "time": "1464273180"
+                "time": "1464273280"
             },
             {
                 "longitude": "200",
                 "latitude": "200",
-                "time": "1464273190"
+                "time": "1464273290"
             },
             {
                 "longitude": "300",
                 "latitude": "300",
-                "time": "1464273200"
+                "time": "1464273310"
             }
         ]
     }

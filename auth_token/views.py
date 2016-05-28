@@ -10,7 +10,7 @@ from run.redisutil import insert_token
 from tokens import make_token_in_cache
 from decorators import token_cache_required
 from run.http import JsonResponse, JsonError
-
+# from django.utils import simplejson
 
 # @token_required
 def loginview(request):
@@ -32,22 +32,31 @@ def signup(request):
     if request.method == "POST":
         username = request.POST.get('username',None)
         password = request.POST.get('password',None)
-        print username,password
-        if not (username and password):
-            # print request.body
-            request_data= json.loads(request.body)
-            username =  request_data["username"]
-            password =  request_data["password"]
-            # email =request_data['email']
+        realname = request.POST.get('realname',None)
 
-        if username and password :
+        if not (username and password and realname):
+            print request.body
             try:
-                print "test get user"
-                user = User.objects.get_by_natural_key(username)
-                print user
-            except User.DoesNotExist,e:
+                request_data= json.loads(request.body,"utf-8")
+                # request_data= simplejson.loads(request.body)
+                username =  request_data["username"]
+                password =  request_data["password"]
+                realname =  request_data["realname"]
+            except Exception,e:
                 print e
-                user = User.objects.create_user(username,password=password)
+                return JsonError(e.message+"is required")
+            # email =request_data['email']
+        print username,password,realname
+        if username and password and realname:
+            try:
+                # print "test get user"
+                user = User.objects.get(username=username)
+                # print user
+            except User.DoesNotExist,e:
+                # print repr(realname)
+                user = User.objects.create_user(username,password=password,first_name=realname[:-2],last_name=realname[-2:])
+                # user = User.objects.create_user(username,password=password,first_name=realname.encode('unicode_escape'))
+                # user = User.objects.create_user(username,password=password,first_name=u"尹子勺")
                 if user.is_active:
                     return HttpResponse("success")
                 else:
@@ -56,7 +65,7 @@ def signup(request):
             else:
                 return JsonError("User already exists")
         else:
-            return JsonError("username or password is none")
+            return JsonError("username , password or realname is none")
 
 
             # print request_data
@@ -67,7 +76,7 @@ def signup(request):
         # data['password']=password
         # return HttpResponse(json.dumps(data),content_type="application/json")
 
-    return JsonError("signup fail")
+    return JsonError("post is required")
 
 
 #用户密码登录返回token

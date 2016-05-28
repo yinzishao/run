@@ -93,13 +93,14 @@ DATABASES = {
         'PASSWORD': 'yinzishao',
         'HOST': '127.0.0.1',                      # Empty for localhost through domain sockets or '127.0.0.1' for localhost through TCP.
         'PORT': '3306',                      # Set to empty string for default.
+        # 'OPTIONS': {'charset': 'utf8mb4'},
     }
 }
 # Internationalization
 # https://docs.djangoproject.com/en/1.8/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
-
+# LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'zh-hans'
 
 USE_I18N = True
 
