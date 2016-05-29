@@ -4,7 +4,7 @@ __author__ = 'yinzishao'
 import time
 
 def change_time_from_str_to_datatime(str):
-    gt =time.gmtime(int(str))
+    gt =time.gmtime(int(float(str)))
     return time.strftime("%Y-%m-%d %H:%M:%S",gt)
 
 # sp = time.strptime("00:01:30",'%H:%M:%S')
@@ -68,7 +68,7 @@ def save_pic(h,id):
         # print imghdr.what(hexstr.decode('hex'))
         w.write(h.decode('hex'))
     domain = "http://polls.nat123.net"
-    return domain+"/static/auth_token/avatar/"+name
+    return "/static/auth_token/avatar/"+name
 # save_pic(hexstr,1)
 # test_pic()
 # hexstr =b[1:-1].replace(" ","")
@@ -87,3 +87,7 @@ otherStyleTime = threeDayAgo.strftime("%Y-%m-%d")
 # print threeDayAgo
 # print timeStamp
 # print type(otherStyleTime)
+
+# print int(float("1.2"))
+# print u"中心及"[:-2]
+# print "中心及".decode("utf-8")

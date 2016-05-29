@@ -19,33 +19,40 @@ from django.db import transaction
 #上传一次跑步结果并且返回前三
 @token_cache_required
 def upload_result(request):
-
+    # with open("")
     # return JsonResponse(RUNNING_RESULT)
-    # r_r =RUNNING_RESULT
-    r_r = json.loads(request.body)
-    userpk = r_r["id"]
     try:
+        # r_r =RUNNING_RESULT_2
+        r_r = json.loads(request.body)
+    except Exception,e:
+        return JsonError("json format error")
+
+
+    try:
+        userpk = r_r["id"]
         user = AuthUser.objects.get(id=userpk)
-    except Exception:
-        return JsonError("user is not valid")
 
-    run = r_r["run"]
-    locations = run["locations"]
-    # print locations
+        run = r_r["run"]
+        locations = run["locations"]
+        # print locations
 
-    locations_sorted = sorted(locations, lambda x, y: int(x["time"]) - int(y["time"]))
+        # locations_sorted = sorted(locations, lambda x, y: float(x["time"]) - float(y["time"]))
+        locations_sorted = sorted(locations, lambda x, y: int(float(x["time"])) - int(float(y["time"])))
 
+        #时间戳有小数点！！
+        starttime = change_time_from_str_to_datatime(locations_sorted[0]["time"])
+        endtime = change_time_from_str_to_datatime(locations_sorted[-1]["time"])
+        #跑步结果对象
+        run_res_value={
+            "running_result_distance":run["distance"],
+            "running_result_duration":time.strftime('%H:%M:%S', time.gmtime(float(run["duration"]))),
+            "running_result_starttime":starttime,
+            "running_result_endtime":endtime,
+        }
 
-    starttime = change_time_from_str_to_datatime(locations_sorted[0]["time"])
-    endtime = change_time_from_str_to_datatime(locations_sorted[-1]["time"])
-    #跑步结果对象
-    run_res_value={
-        "running_result_distance":run["distance"],
-        "running_result_duration":time.strftime('%H:%M:%S', time.gmtime(float(run["duration"]))),
-        "running_result_starttime":starttime,
-        "running_result_endtime":endtime,
-    }
-
+    except Exception,e:
+        # print e.message
+        return JsonError("json parameter is not valid")
 
 
     #创建事务
@@ -215,12 +222,21 @@ def return_first_three(my_rs):
     except Exception,e:
         # print e.message
         return JsonError("get the first three fail")
-
+#根据跑步结果id返回排名：
+def get_raningk(request):
+    try:
+        data = json(request.body)
+        rs_sort =RunningResult.objects.filter(running_result_starttime__day=26)\
+            .extra({'running_result_distance_de':"CAST(running_result_distance as DECIMAL)"})\
+            .order_by('-running_result_distance_de')
+        rs_fir_thr = rs_sort[:3]
+    except Exception,e:
+        return JsonError(e.message)
 #返回某个月的所有跑步结果
-@token_cache_required
+# @token_cache_required
 def get_month_res(requset):
-    # data = MONTH_REQUEST
-    data = json.loads(requset.body)
+    data = MONTH_REQUEST
+    # data = json.loads(requset.body)
     id =data["id"]
     month = data["month"]
     user = AuthUser.objects.get(id=1)
@@ -249,6 +265,7 @@ def get_month_res(requset):
             res["duration"]=str(sp.second+sp.minute*60+sp.hour*3600)
             res["starttime"]=str(every_res.running_result_starttime)
             res["endtime"]=str(every_res.running_result_endtime)
+            res["running_result_id"]=str(every_res.running_result_id)
             # print res["duration"]
             res["locations"]=[]
             loc_set = every_res.locations_set.all()
@@ -288,3 +305,12 @@ def walk_test(request):
         return JsonResponse()
 
 
+def get_test(request):
+    walk =WALK
+    id = walk["id"]
+    year = walk["time"].split("-")[0]
+    month = walk["time"].split("-")[1]
+    user = AuthUser.objects.get(id=id)
+    walk_set = user.walk_set.filter(time__year=year).filter(time__month=month).order_by('time')
+    for i in walk_set:
+        pass

@@ -82,6 +82,32 @@ RUNNING_MUL_RESULT = {
         }
     ]
 }
+
+RUNNING_RESULT_2={
+    "id": "1",
+    "token": "1b5aXp:ZT1dNurOZHOKRellL-FxtDRYH18",
+    "run": {
+        "distance": "24.27618026733398",
+        "duration": "4",
+        "locations": [
+            {
+                "longitude": "37.32888846",
+                "latitude": "122.02686653",
+                "time": "1464522773.159730"
+            },
+            {
+                "longitude": "200",
+                "latitude": "200",
+                "time": "200"
+            },
+            {
+                "longitude": "300",
+                "latitude": "300",
+                "time": "300"
+            }
+        ]
+    }
+}
 # RUNNING_MUL_RESULT.append(RUNNING_RESULT)
 # RUNNING_MUL_RESULT.append(RUNNING_RESULT)
 # RUNNING_MUL_RESULT.append(RUNNING_RESULT)
@@ -91,11 +117,12 @@ avatar="""<89504e47 0d0a1a0a 0000000d 49484452 0000003a 0000003a 08060000 00e1bb
 USER_INF={
     "token":"1b5aXp:ZT1dNurOZHOKRellL-FxtDRYH18",
     "id":"1",
-    "user_avatar":avatar,
+    # "user_avatar":avatar,
     "user_height":"170",
     "user_weight":"55",
     "user_sex":"男",
-    "user_birth":"1995-1-18"
+    "user_birth":"1995-1-18",
+    "realname":"中心及"
 }
 
 MONTH_REQUEST={
@@ -105,9 +132,36 @@ MONTH_REQUEST={
 
 }
 
+UPLOAD_PIC={
+    "token":"1b6gYD:8P3oqpq5RYVwlfh9epdTUvp3lwU",
+    "id":"16",
+    "avatar":avatar
+}
+
+UPLOAD_PIC_2={
+    "token":"1b5aXp:ZT1dNurOZHOKRellL-FxtDRYH18",
+    "id":"1",
+    "avatar":avatar
+}
+
 
 
 WALK ={
     "id":"1",
-    "walk":["222","333"]
+    "walk":["222","333"],
+    "time":"2016-05"
+}
+
+PWD={
+    "token":"1b5aXp:ZT1dNurOZHOKRellL-FxtDRYH18",
+    "id":"1",
+    "old_password":"yinzishao",
+    "new_password":"yinzishao"
+}
+
+RANK={
+    "token":"1b5aXp:ZT1dNurOZHOKRellL-FxtDRYH18",
+    "id":"1",
+    "running_result_id":"12",
+
 }

@@ -162,7 +162,7 @@ class RunningResult(models.Model):
 
 class UserInformation(models.Model):
     user_information_id = models.AutoField(primary_key=True)
-    user_avatar = models.CharField(max_length=45, blank=True, null=True)
+    user_avatar = models.CharField(max_length=200, blank=True, null=True)
     user_height = models.CharField(max_length=10, blank=True, null=True)
     user_weight = models.CharField(max_length=10, blank=True, null=True)
     user_sex = models.CharField(max_length=1, blank=True, null=True)

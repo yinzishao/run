@@ -8,7 +8,7 @@ from django.contrib.auth.models import User
 from django.db import IntegrityError
 from run.models import UserInformation, AuthUser
 from run.redisutil import insert_token
-from run.test_data import USER_INF
+from run.test_data import *
 from run.utils import save_pic
 from tokens import make_token_in_cache
 from decorators import token_cache_required
@@ -16,6 +16,7 @@ from run.http import JsonResponse, JsonError
 # from django.utils import simplejson
 
 domain = "http://polls.nat123.net"
+defalut_avatar ="/static/auth_token/avatar/1.png"
 # @token_required
 def loginview(request):
     # c = {"yin":"yin"}
@@ -79,13 +80,12 @@ def signup(request):
                     #     'token':token,
                     #     'userpk':userpk_encode,
                     # }
-                    #不加密
                     data = {
                         'token':token,
                         'id':str(user.pk),
                         'username':username,
                         'realname':realname,
-                        'avatar':"http://polls.nat123.net/static/auth_token/avatar/1.png",
+                        'avatar':domain+defalut_avatar,
                         'height':"165",
                         'weight':"55",
                         'sex':"男",
@@ -100,14 +100,14 @@ def signup(request):
                         data["weight"]=inf.user_weight
                         data["sex"]=inf.user_sex
                         data["birth"]=str(inf.user_birth)
-                        return JsonResponse(data)
+                    return JsonResponse(data)
                 else:
 
-                    return JsonError("fail")
+                    return JsonError("用户被关进小黑屋")
             else:
-                return JsonError("User already exists")
+                return JsonError("用户已经存在")
         else:
-            return JsonError("username , password or realname is none")
+            return JsonError("用户名、密码和姓名不能为空")
 
 
             # print request_data
@@ -118,7 +118,7 @@ def signup(request):
         # data['password']=password
         # return HttpResponse(json.dumps(data),content_type="application/json")
 
-    return JsonError("post is required")
+    return JsonError("请POST请求")
 
 
 #用户密码登录返回token
@@ -165,7 +165,7 @@ def login_from_pwd(request):
                     'id':str(user.pk),
                     'username':username,
                     'realname':realname,
-                    'avatar':"http://polls.nat123.net/static/auth_token/avatar/1.png",
+                    'avatar':domain+defalut_avatar,
                     'height':"165",
                     'weight':"55",
                     'sex':"男",
@@ -175,11 +175,16 @@ def login_from_pwd(request):
                 inf = user.userinformation_set.all()
                 if len(inf)!= 0:
                     inf = inf[0]
-                    data["avatar"]=domain+inf.user_avatar
-                    data["height"]=inf.user_height
-                    data["weight"]=inf.user_weight
-                    data["sex"]=inf.user_sex
-                    data["birth"]=str(inf.user_birth)
+                    if inf.user_avatar !=None:
+                        data["avatar"]=domain+inf.user_avatar
+                    if inf.user_weight !=None:
+                        data["weight"]=inf.user_weight
+                    if inf.user_sex !=None:
+                        data["sex"]=inf.user_sex
+                    if inf.user_birth !=None:
+                        data["birth"]=str(inf.user_birth)
+                    if inf.user_height !=None:
+                        data["height"]=inf.user_height
 
                 # print data
                 return JsonResponse(data)
@@ -291,21 +296,21 @@ def change_inf(request):
             user = AuthUser.objects.get(id=user_id)
         except AuthUser.DoesNotExist,e:
             return JsonError("id is not valid")
-
+        #修改真实名字
+        realname = data["realname"]
+        # print realname
+        user.first_name=realname[:-2]
+        user.last_name=realname[-2:]
+        user.save()
         del data["id"]
         del data["token"]
-        avatar =data["user_avatar"]
+        del data["realname"]
+        # avatar =data["user_avatar"]
         #上传图片返回连接
         # print len(avatar)
-        try:
-            pic_url = save_pic(avatar[1:-1].replace(" ",""),user.id)
-        except Exception,e:
-            return JsonError("save pic fail")
-        # data["user_id"]=user.id
-        # user_inf,created = UserInformation.objects.update_or_create(**data)
-        #
-        # print pic_url
-        data["user_avatar"]=pic_url
+
+        domain = "http://polls.nat123.net"
+        # data["user_avatar"]=pic_url
         try:
             user_inf_set=user.userinformation_set.all()
             if len(user_inf_set) ==0:
@@ -325,7 +330,11 @@ def change_inf(request):
 
 
         result={}
-        result["avatar"]=user_inf.user_avatar
+        if user_inf.user_avatar=="":
+            res_avatar = defalut_avatar
+        else:
+            res_avatar = user_inf.user_avatar
+        result["avatar"]=domain+res_avatar
         result["height"]=user_inf.user_height
         result["weight"]=user_inf.user_weight
         result["sex"]=user_inf.user_sex
@@ -336,9 +345,72 @@ def change_inf(request):
         # print e.message
         return JsonError("Fail")
 
+#上传头像
+@token_cache_required
+def upload_ava(request):
+    try:
+        # data =UPLOAD_PIC_2
+        data = json.loads(request.body)
+        avatar = data["avatar"]
+        id = data["id"]
+        user =AuthUser.objects.get(id=id)
+        try:
+            pic_url = save_pic(avatar[1:-1].replace(" ",""),id)
+        except Exception,e:
+            return JsonError("save pic fail")
+        try:
+            user_inf_set=user.userinformation_set.all()
+            if len(user_inf_set) ==0:
+                value ={
+                'height':"165",
+                'weight':"55",
+                'sex':"男",
+                'birth':"1990-01-01"
+                }
+                user_inf = UserInformation(user_avatar=pic_url)
+                user_inf.user =user
+                user_inf.save()
+            else:
+                user_inf = user_inf_set[0]
+            result={}
+            result["avatar"]=domain+user_inf.user_avatar
+            return JsonResponse(result)
+
+        except Exception,e:
+            # print e.message
+            return JsonError("inf Fail")
 
 
 
+    except Exception,e:
+        return JsonError("data should be json")
+
+#修改密码
+@token_cache_required
+def change_pwd(request):
+    try:
+        # data=PWD
+        data=json.loads(request.body)
+        id=data["id"]
+        a_user = AuthUser.objects.get(id=id)
+        username = a_user.username
+        password=data["old_password"]
+        new_password=data["new_password"]
+
+        if username and password:
+                user = authenticate(username=username,password=password)
+
+                if user and user.is_active:
+                    user.set_password(new_password)
+                    user.save()
+                    return JsonResponse()
+                else:
+                    return JsonError("password is not valid")
+        else:
+            return JsonError("Fail")
+
+    except Exception,e:
+        return JsonError(e.message)
 
 #
 #
