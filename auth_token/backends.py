@@ -11,10 +11,10 @@ class TokenCacheBackend(ModelBackend):
         data={}
         data["token"]=token
         data["userpk"]=pk
-        print data
+        # print data
         # user,inf=check_token_in_cache_encode(data)
         user,inf=check_token_in_cache(data)
-        print user
+        # print user
         if user:
             return user
         else:

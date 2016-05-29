@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding:utf-8 -*-
 import time
+import datetime
 from django.shortcuts import render
 
 # Create your views here.
@@ -73,7 +74,7 @@ def upload_result(request):
                 loc_obj.save()
             # print "loc success"
     except Exception,e:
-        print e.message
+        # print e.message
         return JsonError("upload fail")
     else:
         #返回排名和前三名
@@ -166,7 +167,7 @@ def upload_one_result(running_result):
                 loc_obj.save()
             # print "loc success"
     except Exception,e:
-        print e.message
+        # print e.message
         return JsonError("upload fail")
     else:
         return JsonResponse()
@@ -212,7 +213,7 @@ def return_first_three(my_rs):
         # print rs_sort.index(my_rs)
         return JsonResponse(result)
     except Exception,e:
-        print e.message
+        # print e.message
         return JsonError("get the first three fail")
 
 #返回某个月的所有跑步结果
@@ -266,4 +267,24 @@ def get_month_res(requset):
 
 
     return JsonResponse({"run":result})
+
+#需考虑传过来的时间和服务器的时间的误差
+def walk_test(request):
+    try:
+        walk = WALK
+        user = AuthUser.objects.get(id=walk["id"])
+        time_tmp = datetime.datetime.now()
+        walk_set = walk["walk"]
+        for i in walk_set:
+            oneDayAgo = (time_tmp - datetime.timedelta(days = 1))
+            otherStyleTime = oneDayAgo.strftime("%Y-%m-%d")
+            time_tmp =oneDayAgo
+            walk_obj = Walk(time=otherStyleTime,value=i)
+            walk_obj.user =user
+            walk_obj.save()
+    except Exception,e:
+        return JsonError("fail")
+    else:
+        return JsonResponse()
+
 

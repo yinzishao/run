@@ -8,4 +8,5 @@ urlpatterns = [
     url(r'^upload_result/?$',"running.views.upload_result",name="upload_result"),
     url(r'^get_month_res/?$',"running.views.get_month_res",name="get_month_res"),
     url(r'^upload_mul_result/?$',"running.views.upload_mul_result",name="upload_mul_result"),
+    url(r'^walk_test/?$',"running.views.walk_test",name="walk_test"),
 ]

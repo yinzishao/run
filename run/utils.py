@@ -60,16 +60,30 @@ def save_pic(h,id):
     # print b[1:len(hcode)+1]
         if hcode == h[0:len(hcode)].upper():
             name = str(id)+"."+type[hcode]
-    path ="/home/yinzishao/virtualenv/run/auth_token/static/auth_token/avatar/"+name
+    # path ="/home/yinzishao/virtualenv/run/auth_token/static/auth_token/avatar/"+name
+    path ="/home/yinzishao/virtualenv/run/collect_static/auth_token/avatar/"+name
     with open(path, "w" ) as w:
 
         # import imghdr
         # print imghdr.what(hexstr.decode('hex'))
         w.write(h.decode('hex'))
-
-    return "/static/auth_token/avatar/"+name
+    domain = "http://polls.nat123.net"
+    return domain+"/static/auth_token/avatar/"+name
 # save_pic(hexstr,1)
 # test_pic()
 # hexstr =b[1:-1].replace(" ","")
 # import imghdr
 # print imghdr.what(hexstr.decode('hex'))
+
+import time
+import datetime
+#先获得时间数组格式的日期
+threeDayAgo = (datetime.datetime.now() - datetime.timedelta(days = 1))
+#转换为时间戳:
+# print threeDayAgo.timetuple()
+# timeStamp = int(time.mktime(threeDayAgo.timetuple()))
+#转换为其他字符串格式:
+otherStyleTime = threeDayAgo.strftime("%Y-%m-%d")
+# print threeDayAgo
+# print timeStamp
+# print type(otherStyleTime)

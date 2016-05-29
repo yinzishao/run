@@ -15,6 +15,7 @@ from decorators import token_cache_required
 from run.http import JsonResponse, JsonError
 # from django.utils import simplejson
 
+domain = "http://polls.nat123.net"
 # @token_required
 def loginview(request):
     # c = {"yin":"yin"}
@@ -81,10 +82,10 @@ def signup(request):
                     #不加密
                     data = {
                         'token':token,
-                        'userpk':str(user.pk),
+                        'id':str(user.pk),
                         'username':username,
                         'realname':realname,
-                        'avatar':"默认",
+                        'avatar':"http://polls.nat123.net/static/auth_token/avatar/1.png",
                         'height':"165",
                         'weight':"55",
                         'sex':"男",
@@ -94,7 +95,7 @@ def signup(request):
                     inf = user.userinformation_set.all()
                     if len(inf)!= 0:
                         inf = inf[0]
-                        data["avatar"]=inf.user_avatar
+                        data["avatar"]=domain+inf.user_avatar
                         data["height"]=inf.user_height
                         data["weight"]=inf.user_weight
                         data["sex"]=inf.user_sex
@@ -161,10 +162,10 @@ def login_from_pwd(request):
 
                 data = {
                     'token':token,
-                    'userpk':str(user.pk),
+                    'id':str(user.pk),
                     'username':username,
                     'realname':realname,
-                    'avatar':"默认",
+                    'avatar':"http://polls.nat123.net/static/auth_token/avatar/1.png",
                     'height':"165",
                     'weight':"55",
                     'sex':"男",
@@ -174,7 +175,7 @@ def login_from_pwd(request):
                 inf = user.userinformation_set.all()
                 if len(inf)!= 0:
                     inf = inf[0]
-                    data["avatar"]=inf.user_avatar
+                    data["avatar"]=domain+inf.user_avatar
                     data["height"]=inf.user_height
                     data["weight"]=inf.user_weight
                     data["sex"]=inf.user_sex
@@ -295,7 +296,7 @@ def change_inf(request):
         del data["token"]
         avatar =data["user_avatar"]
         #上传图片返回连接
-        print len(avatar)
+        # print len(avatar)
         try:
             pic_url = save_pic(avatar[1:-1].replace(" ",""),user.id)
         except Exception,e:
@@ -303,7 +304,7 @@ def change_inf(request):
         # data["user_id"]=user.id
         # user_inf,created = UserInformation.objects.update_or_create(**data)
         #
-        print pic_url
+        # print pic_url
         data["user_avatar"]=pic_url
         try:
             user_inf_set=user.userinformation_set.all()
@@ -319,7 +320,7 @@ def change_inf(request):
                 # user_inf.user_weight = getattr(data,"user_weight",None)
                 # user_inf.user_sex = getattr(data,"user_sex",None)
         except Exception,e:
-            print e.message
+            # print e.message
             return JsonError("inf Fail")
 
 

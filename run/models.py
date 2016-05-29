@@ -158,12 +158,7 @@ class RunningResult(models.Model):
     class Meta:
         managed = False
         db_table = 'running_result'
-    def __str__(self):
-        return str(self.running_result_id)
-    def toJSON(self):
-        import json
-        return json.dumps(dict([(attr, getattr(self, attr)) for attr in [f.name for f in self._meta.fields]]))
-        # return json.dumps(dict([(attr, getattr(self, attr)) for attr in [f.name for f in self._meta.fields] if attr in ["running_result_distance","running_result_duration"]]))
+
 
 class UserInformation(models.Model):
     user_information_id = models.AutoField(primary_key=True)
@@ -177,3 +172,14 @@ class UserInformation(models.Model):
     class Meta:
         managed = False
         db_table = 'user_information'
+
+
+class Walk(models.Model):
+    walk_id = models.AutoField(primary_key=True)
+    user = models.ForeignKey(AuthUser, blank=True, null=True)
+    value = models.CharField(max_length=45, blank=True, null=True)
+    time = models.DateField(blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'walk'

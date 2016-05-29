@@ -22,7 +22,7 @@ def token_cache_required(view_func):
         # userpk = request.POST.get('userpk')
         token = request.POST.get('token', request.GET.get('token'))
         # token = request.POST.get('token')
-        print userpk,token
+        # print userpk,token
         if not (userpk and token) and request.body:
         # print request.body
             try:
