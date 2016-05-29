@@ -246,6 +246,8 @@ def get_month_res(requset):
             # sp = time.strptime(str(every_res.running_result_duration),'%H:%M:%S')
             # res["duration"]=str(sp.tm_sec+sp.tm_min*60+sp.tm_hour*3600)
             res["duration"]=str(sp.second+sp.minute*60+sp.hour*3600)
+            res["starttime"]=str(every_res.running_result_starttime)
+            res["endtime"]=str(every_res.running_result_endtime)
             # print res["duration"]
             res["locations"]=[]
             loc_set = every_res.locations_set.all()
@@ -263,4 +265,5 @@ def get_month_res(requset):
             result.append(res)
 
 
-    return JsonResponse(result)
+    return JsonResponse({"run":result})
+

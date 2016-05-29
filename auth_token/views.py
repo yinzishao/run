@@ -8,6 +8,8 @@ from django.contrib.auth.models import User
 from django.db import IntegrityError
 from run.models import UserInformation, AuthUser
 from run.redisutil import insert_token
+from run.test_data import USER_INF
+from run.utils import save_pic
 from tokens import make_token_in_cache
 from decorators import token_cache_required
 from run.http import JsonResponse, JsonError
@@ -81,9 +83,23 @@ def signup(request):
                         'token':token,
                         'userpk':str(user.pk),
                         'username':username,
-                        'realname':realname
+                        'realname':realname,
+                        'avatar':"默认",
+                        'height':"165",
+                        'weight':"55",
+                        'sex':"男",
+                        'birth':"1990-01-01",
                     }
-                    return JsonResponse(data)
+                    user =AuthUser.objects.get(id=user.pk)
+                    inf = user.userinformation_set.all()
+                    if len(inf)!= 0:
+                        inf = inf[0]
+                        data["avatar"]=inf.user_avatar
+                        data["height"]=inf.user_height
+                        data["weight"]=inf.user_weight
+                        data["sex"]=inf.user_sex
+                        data["birth"]=str(inf.user_birth)
+                        return JsonResponse(data)
                 else:
 
                     return JsonError("fail")
@@ -147,8 +163,12 @@ def login_from_pwd(request):
                     'token':token,
                     'userpk':str(user.pk),
                     'username':username,
-                    'realname':realname
-
+                    'realname':realname,
+                    'avatar':"默认",
+                    'height':"165",
+                    'weight':"55",
+                    'sex':"男",
+                    'birth':"1990-01-01",
                 }
                 user =AuthUser.objects.get(id=user.pk)
                 inf = user.userinformation_set.all()
@@ -262,21 +282,57 @@ def createUser(**kwargs):
 @token_cache_required
 def change_inf(request):
     try:
+        # data = USER_INF
         data = json.loads(request.body)
         # avatar = getattr(data,"user_avatar",None)
+        user_id = data["id"]
         try:
-            user = AuthUser.objects.get(id=data["id"])
+            user = AuthUser.objects.get(id=user_id)
         except AuthUser.DoesNotExist,e:
             return JsonError("id is not valid")
 
         del data["id"]
         del data["token"]
-        user_inf = UserInformation(**data)
-        user_inf.user =user
-        user_inf.save()
-        return JsonResponse()
+        avatar =data["user_avatar"]
+        #上传图片返回连接
+        print len(avatar)
+        try:
+            pic_url = save_pic(avatar[1:-1].replace(" ",""),user.id)
+        except Exception,e:
+            return JsonError("save pic fail")
+        # data["user_id"]=user.id
+        # user_inf,created = UserInformation.objects.update_or_create(**data)
+        #
+        print pic_url
+        data["user_avatar"]=pic_url
+        try:
+            user_inf_set=user.userinformation_set.all()
+            if len(user_inf_set) ==0:
+                user_inf = UserInformation(**data)
+                user_inf.user =user
+                user_inf.save()
+            else:
+                user_inf_set.update(**data)
+                user_inf = user_inf_set[0]
+                # user_inf.user_avatar = getattr(data,"user_avatar",None)
+                # user_inf.user_height = getattr(data,"user_height",None)
+                # user_inf.user_weight = getattr(data,"user_weight",None)
+                # user_inf.user_sex = getattr(data,"user_sex",None)
+        except Exception,e:
+            print e.message
+            return JsonError("inf Fail")
+
+
+        result={}
+        result["avatar"]=user_inf.user_avatar
+        result["height"]=user_inf.user_height
+        result["weight"]=user_inf.user_weight
+        result["sex"]=user_inf.user_sex
+        result["birth"]=str(user_inf.user_birth)
+        return JsonResponse(result)
         # avatar = getattr(data,"user_avatar",None)
-    except:
+    except Exception,e:
+        # print e.message
         return JsonError("Fail")
 
 

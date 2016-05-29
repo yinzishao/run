@@ -14,7 +14,7 @@ time_signer = TimestampSigner(salt=token_cahce_salt)
 user_salt = "user_salt"
 user_signer = Signer(salt=user_salt)
 #过期时间，默认10天
-max_age= 60*60*24*10
+max_age= 60*60*24*30
 
 #根据id和timestamp生成token
 def make_token_in_cache(user):
