@@ -34,34 +34,114 @@ def loginview(request):
 def signup(request):
     data={}
     # print request.method
-    if request.method == "POST":
-        username = request.POST.get('username',None)
-        password = request.POST.get('password',None)
-        realname = request.POST.get('realname',None)
+    try:
+        if request.method == "POST":
+            username = request.POST.get('username',None)
+            password = request.POST.get('password',None)
+            realname = request.POST.get('realname',None)
 
-        if not (username and password and realname):
-            # print request.body
-            try:
-                request_data= json.loads(request.body,"utf-8")
-                # request_data= simplejson.loads(request.body)
-                username =  request_data["username"]
-                password =  request_data["password"]
-                realname =  request_data["realname"]
-            except Exception,e:
-                # print e
-                return JsonError(e.message+"is required")
-            # email =request_data['email']
-        # print username,password,realname
-        if username and password and realname:
-            try:
-                # print "test get user"
-                user = User.objects.get(username=username)
-                # print user
-            except User.DoesNotExist,e:
-                # print repr(realname)
-                user = User.objects.create_user(username,password=password,first_name=realname[:-2],last_name=realname[-2:])
-                # user = User.objects.create_user(username,password=password,first_name=realname.encode('unicode_escape'))
-                # user = User.objects.create_user(username,password=password,first_name=u"尹子勺")
+            if not (username and password and realname):
+                # print request.body
+                try:
+                    request_data= json.loads(request.body,"utf-8")
+                    # request_data= simplejson.loads(request.body)
+                    username =  request_data["username"]
+                    password =  request_data["password"]
+                    realname =  request_data["realname"]
+                except Exception,e:
+                    # print e
+                    return JsonError(e.message+"is required")
+                # email =request_data['email']
+            # print username,password,realname
+            if username and password and realname:
+                try:
+                    # print "test get user"
+                    user = User.objects.get(username=username)
+                    # print user
+                except User.DoesNotExist,e:
+                    # print repr(realname)
+                    user = User.objects.create_user(username,password=password,first_name=realname[:-2],last_name=realname[-2:])
+                    # user = User.objects.create_user(username,password=password,first_name=realname.encode('unicode_escape'))
+                    # user = User.objects.create_user(username,password=password,first_name=u"尹子勺")
+
+                    if user and user.is_active:
+                        login(request,user)
+                        token = make_token_in_cache(user).split(":",1)[1]
+
+                        #将{token:id}放在redis内
+                        redis_data = {
+                            'token':token,
+                            'userpk':user.pk,
+                        }
+                        insert_token(redis_data)
+                        #将pk加密
+
+                        # userpk_encode = user_signer.sign(user.pk).split(":",1)[1]
+                        # data = {
+                        #     'token':token,
+                        #     'userpk':userpk_encode,
+                        # }
+                        data = {
+                            'token':token,
+                            'id':str(user.pk),
+                            'username':username,
+                            'realname':realname,
+                            'avatar':domain+defalut_avatar,
+                            'height':"165",
+                            'weight':"55",
+                            'sex':"男",
+                            'birth':"1990-01-01",
+                        }
+                        user =AuthUser.objects.get(id=user.pk)
+                        inf = user.userinformation_set.all()
+                        if len(inf)!= 0:
+                            inf = inf[0]
+                            data["avatar"]=domain+inf.user_avatar
+                            data["height"]=inf.user_height
+                            data["weight"]=inf.user_weight
+                            data["sex"]=inf.user_sex
+                            data["birth"]=str(inf.user_birth)
+                        return JsonResponse(data)
+                    else:
+
+                        return JsonError("用户被关进小黑屋")
+                else:
+                    return JsonError("用户已经存在")
+            else:
+                return JsonError("用户名、密码和姓名不能为空")
+
+
+                # print request_data
+                # return HttpResponse(request.body,content_type="application/json")
+                # print request_data
+            # print username,password
+            # data['username']=username
+            # data['password']=password
+            # return HttpResponse(json.dumps(data),content_type="application/json")
+
+        return JsonError("请POST请求")
+    except Exception,e:
+        return JsonError(e.message)
+
+
+#用户密码登录返回token
+def login_from_pwd(request):
+    try:
+        username=None
+        password=None
+        if request.method == 'POST':
+            username = request.POST.get('username')
+            password = request.POST.get('password')
+        # username="yzs"fhttp://127.0.0.1/
+        # password="pwd"
+            if not (username and password):
+                    # print request.body
+                    request_data= json.loads(request.body)
+                    username =  request_data["username"]
+                    password =  request_data["password"]
+                    # print username,password
+            if username and password:
+                user = authenticate(username=username,password=password)
 
                 if user and user.is_active:
                     login(request,user)
@@ -80,6 +160,10 @@ def signup(request):
                     #     'token':token,
                     #     'userpk':userpk_encode,
                     # }
+                    #不加密
+                    username = user.username
+                    realname = user.first_name+user.last_name
+
                     data = {
                         'token':token,
                         'id':str(user.pk),
@@ -95,105 +179,27 @@ def signup(request):
                     inf = user.userinformation_set.all()
                     if len(inf)!= 0:
                         inf = inf[0]
-                        data["avatar"]=domain+inf.user_avatar
-                        data["height"]=inf.user_height
-                        data["weight"]=inf.user_weight
-                        data["sex"]=inf.user_sex
-                        data["birth"]=str(inf.user_birth)
+                        if inf.user_avatar !=None:
+                            data["avatar"]=domain+inf.user_avatar
+                        if inf.user_weight !=None:
+                            data["weight"]=inf.user_weight
+                        if inf.user_sex !=None:
+                            data["sex"]=inf.user_sex
+                        if inf.user_birth !=None:
+                            data["birth"]=str(inf.user_birth)
+                        if inf.user_height !=None:
+                            data["height"]=inf.user_height
+
+                    # print data
                     return JsonResponse(data)
                 else:
-
-                    return JsonError("用户被关进小黑屋")
+                    return JsonError("Fail")
             else:
-                return JsonError("用户已经存在")
+                return JsonError("username and password is required")
         else:
-            return JsonError("用户名、密码和姓名不能为空")
-
-
-            # print request_data
-            # return HttpResponse(request.body,content_type="application/json")
-            # print request_data
-        # print username,password
-        # data['username']=username
-        # data['password']=password
-        # return HttpResponse(json.dumps(data),content_type="application/json")
-
-    return JsonError("请POST请求")
-
-
-#用户密码登录返回token
-def login_from_pwd(request):
-    username=None
-    password=None
-    if request.method == 'POST':
-        username = request.POST.get('username')
-        password = request.POST.get('password')
-    # username="yzs"fhttp://127.0.0.1/
-    # password="pwd"
-        if not (username and password):
-                # print request.body
-                request_data= json.loads(request.body)
-                username =  request_data["username"]
-                password =  request_data["password"]
-                # print username,password
-        if username and password:
-            user = authenticate(username=username,password=password)
-
-            if user and user.is_active:
-                login(request,user)
-                token = make_token_in_cache(user).split(":",1)[1]
-
-                #将{token:id}放在redis内
-                redis_data = {
-                    'token':token,
-                    'userpk':user.pk,
-                }
-                insert_token(redis_data)
-                #将pk加密
-
-                # userpk_encode = user_signer.sign(user.pk).split(":",1)[1]
-                # data = {
-                #     'token':token,
-                #     'userpk':userpk_encode,
-                # }
-                #不加密
-                username = user.username
-                realname = user.first_name+user.last_name
-
-                data = {
-                    'token':token,
-                    'id':str(user.pk),
-                    'username':username,
-                    'realname':realname,
-                    'avatar':domain+defalut_avatar,
-                    'height':"165",
-                    'weight':"55",
-                    'sex':"男",
-                    'birth':"1990-01-01",
-                }
-                user =AuthUser.objects.get(id=user.pk)
-                inf = user.userinformation_set.all()
-                if len(inf)!= 0:
-                    inf = inf[0]
-                    if inf.user_avatar !=None:
-                        data["avatar"]=domain+inf.user_avatar
-                    if inf.user_weight !=None:
-                        data["weight"]=inf.user_weight
-                    if inf.user_sex !=None:
-                        data["sex"]=inf.user_sex
-                    if inf.user_birth !=None:
-                        data["birth"]=str(inf.user_birth)
-                    if inf.user_height !=None:
-                        data["height"]=inf.user_height
-
-                # print data
-                return JsonResponse(data)
-            else:
-                return JsonError("Fail")
-        else:
-            return JsonError("username and password is required")
-    else:
-            return JsonError("POST is required")
+                return JsonError("POST is required")
+    except Exception,e:
+        return JsonError(e.message)
 
 
 
