@@ -345,6 +345,7 @@ def change_inf(request):
         result["weight"]=user_inf.user_weight
         result["sex"]=user_inf.user_sex
         result["birth"]=str(user_inf.user_birth)
+        result["realname"]=user.first_name+user.last_name
         return JsonResponse(result)
         # avatar = getattr(data,"user_avatar",None)
     except Exception,e:
