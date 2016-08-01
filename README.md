@@ -1,9 +1,9 @@
 # run
 running life
 
-host: http://polls.nat123.net/
-POST
-Content-Type:application/json
+host: http://polls.nat123.net/  
+POST  
+Content-Type:application/json  
 
 
 
@@ -16,8 +16,8 @@ Content-Type:application/json
 
 
 #根据页数和间隔返回一个月的排名列表和自己的排名
-POST
-/get_month_ranking/
+POST  
+/get_month_ranking/  
 
 {
     "token": "1b5aXp:ZT1dNurOZHOKRellL-FxtDRYH18",
@@ -44,9 +44,9 @@ Return
     "my_ranking": "1",
     "success": "1"
 }
-#根据页数和间隔返回某周的排名列表和自己的排名
-POST
-/get_week_ranking/
+#根据页数和间隔返回某周的排名列表和自己的排名    
+POST    
+/get_week_ranking/   
 
 {
     "token": "1b5aXp:ZT1dNurOZHOKRellL-FxtDRYH18",
