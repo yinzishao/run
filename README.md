@@ -1,7 +1,18 @@
-# run
-running life
+# Running-Life---iOS
 
-host: http://polls.nat123.net/  
+是基于HealthKit和高德地图开发的健康跑步助手。记录跑步路线和距离，并能与他人比较跑步排名。  
+ios演示地址和源码：https://github.com/caixindong/Running-Life---iOS
+
+本人负责的是**后台部分**：
+使用Python的Django框架进行后台开发,提供API给客户端。  
+并为了适应手机用户的调用后台API，开发了一个基于token的认证应用。  
+利用时间戳等信息加密生成token用作令牌，装饰后台API，实现安全访问和状态维持。  
+并用redis将token做内存缓存，加快访问速度。  
+
+
+说明文档：
+
+host: 
 POST  
 Content-Type:application/json  
 
