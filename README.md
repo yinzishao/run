@@ -8,17 +8,18 @@ Content-Type:application/json
 
 
 出现错误返回的信息格式：
+```
 {
     "success": "0",
     "error": "error message"
 }
-
+```
 
 
 #根据页数和间隔返回一个月的排名列表和自己的排名
 POST  
 /get_month_ranking/  
-
+```
 {
     "token": "1b5aXp:ZT1dNurOZHOKRellL-FxtDRYH18",
     "id": "1",
@@ -26,10 +27,10 @@ POST
     "page": "1",	#第一页
     "interval": "5"	#每次取5个
 }
-
+```
 
 Return
-
+```
 {
     "ranking": [		#第一名
         {
@@ -44,10 +45,11 @@ Return
     "my_ranking": "1",
     "success": "1"
 }
+```
 #根据页数和间隔返回某周的排名列表和自己的排名    
 POST    
 /get_week_ranking/   
-
+```
 {
     "token": "1b5aXp:ZT1dNurOZHOKRellL-FxtDRYH18",
     "id": "1",
@@ -55,7 +57,9 @@ POST
     "page": "1",	#第一页
     "interval": "5"	#每次取5个
 }
+```
 Return
+```
 {
     "ranking": [
         {
@@ -84,11 +88,12 @@ Return
     "my_ranking": "7",
     "success": "1"
 }
-
+```
 
 #根据跑步结果id返回该次跑步当天排名：
 /get_ranking/
 POST
+```
 {
     "token":"1b5aXp:ZT1dNurOZHOKRellL-FxtDRYH18",
     "id":"1",
@@ -96,9 +101,9 @@ POST
     "page":"1",
     "interval":"5"
 }
-
+```
 Return
-
+```
 {
     "ranking": [
         {
@@ -127,11 +132,11 @@ Return
     "my_ranking": "7",
     "success": "1"
 }
-
+```
 #上传多个结果
 /upload_mul_result/
 POST
-
+```
 {
     "id": "1",
     "token": "ss",
@@ -180,9 +185,9 @@ POST
         }
     ]
 }
-
+```
 改为：
-
+```
 {
     "running_result_id": [
         "35",
@@ -190,10 +195,11 @@ POST
     ],
     "success": "1"
 }
-
+```
 #上传跑步结果
 /upload_result/
 POST
+```
 {
     "id": "1",
     "token": "1b5aXp:ZT1dNurOZHOKRellL-FxtDRYH18",
@@ -219,8 +225,9 @@ POST
         ]
     }
 }
+```
 return 自己排名和前三排名加了结果id
-
+```
 {
 "my_ranking": "8",
 "running_result_id": 37,
@@ -240,78 +247,82 @@ return 自己排名和前三排名加了结果id
     ],
     "success": "1"
 }
-
+```
 
 
 失败：
-
+```
 #用户id错误
 {
     "success": "0",
     "error": "user is not valid"
 }
+```
 
-
-
+```
 {
     "success": "0",
     "error": "upload fail"
 }
-
+```
 
 
 #上传图片借口
 POST
 /upload_ava/
+```
 {
     "token": "1b6gYD:8P3oqpq5RYVwlfh9epdTUvp3lwU",
     "id": "16",
     "avatar": "ssssssssssssssssssssssssssssssssssssssss"
 }
-
+```
 Return
-
+```
 {
     "avatar": "http://polls.nat123.net/static/auth_token/avatar/16.png",
     "success": "1"
 }
-
+```
 #修改密码
 /change_pwd/
+```
 {
     "token": "1b5aXp:ZT1dNurOZHOKRellL-FxtDRYH18",
     "id": "1",
     "old_password": "yinzishao",
     "new_password": "yinzishao"
 }
-
+```
 Return
 
 成功:
+```
 {
     "success": "1"
 }
-
+```
 错误:
+```
 {
     "success": "0",
     "error": "password is not valid"
 }
-
+```
 #注册,已修改。现在是用户名和密码注册，添加姓名
 /signup/
 POST
-
+```
 {
     "username": "yinzishao",
 "password": "yinzishao",
 "realname":"尹子勺"
 }
-
+```
 return 
 
 #注册成功
-
+```
 {
     "username": "caixxx",
     "token": "1b6gnv:M6klTdiDfJAt0NKkOLwDp_10DiQ",
@@ -324,21 +335,21 @@ return
     "sex": "男",
     "birth": "1990-01-01"
 }
-
+```
 #登陆,返回token和id
 /login_from_pwd/
 
 POST
-
+```
 {
     "username": "yinzishao",
     "password": "yinzishao"
 }
-
+```
 Return
 #默认
 
-
+```
 {
     "username": "cai",
     "token": "1b6sGv:jZIHe72S7alJDQQeTntNZ1b5B44",
@@ -351,27 +362,28 @@ Return
     "birth": "1990-01-01",
     "avatar": "默认"
 }
-
+```
 
 #测试token和id是否登陆成功
 /test/
 
 POST
-
+```
 {
     "token": "1b46US:_uw-1cM6p3M8H10r7SF3DR6EQCk",
     "id": "1"
 }
+```
 return
 
 成功：
-
+```
 {
     "scccess": "1"
 }
-
+```
 失败：
-
+```
 {
     "success": "0",
     "error": "authentication failer"
@@ -399,10 +411,11 @@ return
     "success": "0",
     "error": "id is not valid"
 }
-
+```
 #修改个人资料(头像还是字符串类型，需更改)
 /change_inf/
 POST
+```
 {
     "token": "1b6sLO:Ssaf6Y5sEYFmgCu3LoFUI3lVtZQ",
     "id": "15",
@@ -412,10 +425,11 @@ POST
 "user_birth": "1995-10-18",
 "realname":"中心及"
 }
-
+```
 
 注意上传数据的字段和返回的数据不一样
 成功（修改信息成功后返回修改的信息）：
+```
 {
     "realname": "中心纪",
     "weight": "55",
@@ -424,28 +438,31 @@ POST
     "avatar": "http://polls.nat123.net/static/auth_token/avatar/16.png",
     "birth": "1995-10-18",
     "height": "170"
-}失败：
+}
+```
+失败：
+```
 {
     "success": "0",
     "error": "Fail"
 }
-
+```
 
 
 #返回某个月的所有跑步结果
 /get_month_res/	
 POST
-
+```
 {
     "token":"1b5aXp:ZT1dNurOZHOKRellL-FxtDRYH18",
     "id":"1",
     "month":"2016-5"
 
 }
-
+```
 Return:
 
-	
+```	
 {
     "run": [
         {
@@ -499,9 +516,12 @@ Return:
     ],
     "success": "1"
 }
+```
 如果无则是：
+```
 {
     "run": [],
     "success": "1"
 }
+```
 
