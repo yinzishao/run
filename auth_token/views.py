@@ -13,8 +13,8 @@ from run.utils import save_pic
 from tokens import make_token_in_cache
 from decorators import token_cache_required
 from run.http import JsonResponse, JsonError
+from run.settings import DOMAIN
 # from django.utils import simplejson
-domain = "http://119.29.115.117:8080"
 defalut_avatar ="/static/auth_token/avatar/1.png"
 # @token_required
 def loginview(request):
@@ -87,7 +87,7 @@ def signup(request):
                             'id':str(user.pk),
                             'username':username,
                             'realname':realname,
-                            'avatar':domain+defalut_avatar,
+                            'avatar':DOMAIN+defalut_avatar,
                             'height':"165",
                             'weight':"55",
                             'sex':"男",
@@ -97,7 +97,7 @@ def signup(request):
                         inf = user.userinformation_set.all()
                         if len(inf)!= 0:
                             inf = inf[0]
-                            data["avatar"]=domain+inf.user_avatar
+                            data["avatar"]=DOMAIN+inf.user_avatar
                             data["height"]=inf.user_height
                             data["weight"]=inf.user_weight
                             data["sex"]=inf.user_sex
@@ -170,7 +170,7 @@ def login_from_pwd(request):
                         'id':str(user.pk),
                         'username':username,
                         'realname':realname,
-                        'avatar':domain+defalut_avatar,
+                        'avatar':DOMAIN+defalut_avatar,
                         'height':"165",
                         'weight':"55",
                         'sex':"男",
@@ -181,7 +181,7 @@ def login_from_pwd(request):
                     if len(inf)!= 0:
                         inf = inf[0]
                         if inf.user_avatar !=None:
-                            data["avatar"]=domain+inf.user_avatar
+                            data["avatar"]=DOMAIN+inf.user_avatar
                         if inf.user_weight !=None:
                             data["weight"]=inf.user_weight
                         if inf.user_sex !=None:
@@ -340,7 +340,7 @@ def change_inf(request):
             res_avatar = defalut_avatar
         else:
             res_avatar = user_inf.user_avatar
-        result["avatar"]=domain+res_avatar
+        result["avatar"]=DOMAIN+res_avatar
         result["height"]=user_inf.user_height
         result["weight"]=user_inf.user_weight
         result["sex"]=user_inf.user_sex
@@ -382,7 +382,7 @@ def upload_ava(request):
             user_inf.save()
 
             result={}
-            result["avatar"]=domain+user_inf.user_avatar
+            result["avatar"]=DOMAIN+user_inf.user_avatar
             return JsonResponse(result)
 
         except Exception,e:

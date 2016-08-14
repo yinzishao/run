@@ -14,7 +14,8 @@ from django.contrib.auth.models import User
 from run.utils import change_time_from_str_to_datatime
 from django.db import transaction
 from django.db.models import Sum,Count
-
+from run.settings import DOMAIN
+defalut_avatar ="/static/auth_token/avatar/1.png"
 
 #上传一次跑步结果并且返回前三
 @token_cache_required
@@ -341,16 +342,18 @@ def get_month_ranking(request):
         #         .values('user_id').annotate(ds=Count("user_id"))
         # print rs_sort
         year_month = data["time"]
-        res = my_custom_sql(year_month)
+        res = my_custom_sql(year_month)     #获取当月的所有记录。然后再找自己的记录
         # print res
         result={}
+        #得到自身排名
         for index,values in enumerate(res):
             if values["user_id"] == int(data["id"]):
                 result["my_ranking"]=str(index+1)
-                print index,type(values["user_id"])
+                # print index,type(values["user_id"])
         page =int(data["page"])
         interval=int(data["interval"])
         strat = (page-1)*interval
+        #获取排名列表
         r =res[strat:strat+5]
         for i in r:
             sum = str(i.pop("amount_sum"))
@@ -358,6 +361,15 @@ def get_month_ranking(request):
             user = AuthUser.objects.get(id=id)
             i["username"]=user.username
             i["sum"]=sum
+            #获取头像
+            user_inf_set=user.userinformation_set.all()
+            if len(user_inf_set) ==0:
+                res_avatar = defalut_avatar
+            else:
+                user_inf = user_inf_set[0]
+                res_avatar = defalut_avatar if user_inf.user_avatar=="" else user_inf.user_avatar
+            i["avatar"]=DOMAIN+res_avatar
+
         result["ranking"]=r
         return JsonResponse(result)
     except Exception,e:
@@ -385,6 +397,7 @@ def dictfetchall(cursor):
 
 #需考虑传过来的时间和服务器的时间的误差
 def walk_test(request):
+    return JsonResponse(DOMAIN)
     try:
         walk = WALK
         user = AuthUser.objects.get(id=walk["id"])
