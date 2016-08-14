@@ -60,14 +60,14 @@ def save_pic(h,id):
     # print b[1:len(hcode)+1]
         if hcode == h[0:len(hcode)].upper():
             name = str(id)+"."+type[hcode]
-    # path ="/home/yinzishao/virtualenv/run/auth_token/static/auth_token/avatar/"+name
-    path ="/home/yinzishao/virtualenv/run/collect_static/auth_token/avatar/"+name
+    # path ="/home/ubuntu/yzs/run/auth_token/static/auth_token/avatar/"+name
+    path ="/home/ubuntu/yzs/run/collect_static/auth_token/avatar/"+name
     with open(path, "w" ) as w:
 
         # import imghdr
         # print imghdr.what(hexstr.decode('hex'))
         w.write(h.decode('hex'))
-    domain = "http://polls.nat123.net"
+    domain = "http://119.29.115.117:8080"
     return "/static/auth_token/avatar/"+name
 # save_pic(hexstr,1)
 # test_pic()

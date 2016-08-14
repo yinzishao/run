@@ -14,8 +14,7 @@ from tokens import make_token_in_cache
 from decorators import token_cache_required
 from run.http import JsonResponse, JsonError
 # from django.utils import simplejson
-
-domain = "http://polls.nat123.net"
+domain = "http://119.29.115.117:8080"
 defalut_avatar ="/static/auth_token/avatar/1.png"
 # @token_required
 def loginview(request):
