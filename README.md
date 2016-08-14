@@ -22,7 +22,7 @@
 
 #说明文档：
 
-host: 
+host: http://119.29.115.117:8080/  
 POST  
 Content-Type:application/json  
 
