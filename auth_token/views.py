@@ -376,11 +376,11 @@ def upload_ava(request):
                 }
                 user_inf = UserInformation(user_avatar=pic_url)
                 user_inf.user =user
-
             else:
                 user_inf = user_inf_set[0]
-                user_inf.update(user_avatar=pic_url)        #更新url，虽然id相同但后缀可能不同
+                user_inf.user_avatar=pic_url    #更新url，虽然id相同但后缀可能不同
             user_inf.save()
+
             result={}
             result["avatar"]=domain+user_inf.user_avatar
             return JsonResponse(result)
