@@ -53,14 +53,16 @@ POST
 Return
 ```
 {
-    "ranking": [		#第一名
+    "ranking": [
         {
-            "sum": "11556.64",	#该月跑的总距离
-            "username": "yinzishao"	#用户名
+            "username": "yinzishao",
+            "sum": "12001.08",
+            "avatar": "http://119.29.115.117:8080/static/auth_token/avatar/1.png"
         },
-        {			#第二名
-            "sum": "572.856647491",
-            "username": "458770054"
+        {
+            "username": "458770054",
+            "sum": "2761.68709373",
+            "avatar": "http://119.29.115.117:8080/static/auth_token/avatar/7.png"
         }
     ],
     "my_ranking": "1",
