@@ -11,10 +11,19 @@
   并用**redis**将token做内存缓存，加快访问速度。 
   具体代码实现在auth_token应用里面。
 
-##TODO：refer_token、权限控制等。
+##TODO：refer_token、权限控制、rsa加密等。
 
 ##使用方法很简单：
   只需在view里面的方法中用@token_cache_required装饰就可以了。
+
+##需要安装：
+django1.8.2  
+mysql  
+redis  
+PyMySQL  
+M2Crypto  
+
+>ios与python后台的RSA加密:https://torstenbuechner.wordpress.com/2013/02/05/rsa-sending-encrypted-messages-from-ios-to-python/
   
 
 
