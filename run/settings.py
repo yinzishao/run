@@ -126,3 +126,4 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'collect_static').replace('\\','/')
 #     os.path.join(BASE_DIR, "media"),
 ##    '/path/to/others/static/',  # 用不到的时候可以不写这一行
 # )
+DOMAIN = "http://119.29.115.117:8080"
