@@ -80,7 +80,7 @@ def save_pic(h,id):
         # import imghdr
         # print imghdr.what(hexstr.decode('hex'))
         w.write(h.decode('hex'))
-    return "/static/auth_token/avatar/"+name
+    return "/collect_static/auth_token/avatar/"+name
 # save_pic(hexstr,1)
 # test_pic()
 # hexstr =b[1:-1].replace(" ","")
